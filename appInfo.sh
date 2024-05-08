@@ -1,0 +1,84 @@
+#!/bin/bash
+
+# 获取给定的应用程序的信息
+# shellcheck disable=SC2009
+# shellcheck disable=SC2012
+# shellcheck disable=SC2002
+
+appname=$1
+
+function usage() {
+    echo -e "Usage: "
+    echo "  $0 <appname>"
+    echo "  appname: The name of the application to get information."
+    exit 1
+}
+
+# ============Main============
+if [ -z $appname ]; then
+    usage
+fi
+
+pids=`pgrep $appname`  # 获取应用程序的PID  pid=`ps -ef | grep $appname | grep -v grep | awk '{print $2}'`
+#pid=`echo $pids | awk '{print $1}'`
+i=1
+npids=`echo $pids | wc -w`
+
+for pid in $pids
+do
+    if [[ -z $pid ]]; then
+        echo "The application $appname is not running."
+        exit 2
+    fi
+
+    # 获取应用程序的启动时间
+    starttime=`ps -p $pid -o lstart | grep -v STARTED`
+    starttime=`date -d "$starttime" "+%Y-%m-%d %H:%M:%S"`
+
+    # 获取应用程序的运行时间
+    runtime=`ps -p $pid -o etime | grep -v ELAPSED`
+    runtime=$(echo $runtime | awk -F'[-:]' '{printf "%02d days %02d hours %02d minutes %02d seconds", $1, $2, $3, $4}')
+
+#    ports=`netstat -anp 2>/dev/null | grep $pid | grep LISTEN | awk '{print $4}' | awk -F: '{print $NF}'`
+    ports=$(netstat -anp 2>/dev/null | grep $pid | grep LISTEN | awk '{print $4}' | grep -o '[0-9]*$')  # 获取应用程序的端口号
+
+    cpu=`ps -p $pid -o pcpu | grep -v CPU`  # 获取应用程序的CPU占用率
+    mem=`ps -p $pid -o pmem | grep -v MEM`  # 获取应用程序的内存占用率
+    threads=`ps -p $pid -o nlwp | grep -v NLWP`  # 获取应用程序的线程数
+    nfiles=`ls /proc/$pid/fd | wc -l`  # 获取应用程序的文件句柄数
+    connections=`netstat -anp 2>/dev/null | grep -c $pid`  # 获取应用程序的网络连接数
+    status=`ps -p $pid -o state --no-headers`  # 获取应用程序的状态
+    args=$(tr '\0' ' ' < /proc/$pid/cmdline)  # 获取应用程序的命令行参数  args=`cat /proc/$pid/cmdline | tr -d '\000'`
+    cwd=`ls -l /proc/$pid/cwd | awk '{print $NF}'`  # 获取应用程序的工作目录
+
+    # 输出应用程序的信息
+    if [ $i -eq 1 ]; then
+        echo "===================================Application Information==================================="
+    fi
+    echo "Application: $appname-$i"
+    echo "PID: $pid"
+    echo "Start Time: $starttime"
+    echo "Run Time: $runtime"
+    echo "Arguments: $args"
+    echo "Ports: $(echo $ports | tr '\n' ' ' | sed 's/,$//')"
+    echo "CPU: $cpu"
+    echo "Memory: $mem"
+    echo "Threads: $threads"
+    echo "Files: $nfiles"
+    echo "Connections: $connections"
+    echo "Status: $status"
+    echo "Current Working Directory: $cwd"
+
+    if [ $i -ge "$npids" ]; then
+        echo "============================================================================================="
+    else
+        echo "-----------------------------------------------------------------------------------------------"
+
+    fi
+    i=$((i+1))
+
+done
+
+
+
+

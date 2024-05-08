@@ -28,7 +28,7 @@ Download files from ftp server. (Not yet completed.)
 ./download_from_ftp.sh
 ```
 
-### download_from_cmems.sh
+### `download_from_cmems.sh` :
 
 Download files from Copernicus Marine Environment Monitoring Service (CMEMS) server.
 
@@ -36,6 +36,13 @@ Download files from Copernicus Marine Environment Monitoring Service (CMEMS) ser
 ./download_from_cmems.sh
 ```
 
+### `make_remote_gitrepo.sh` :
+
+Make a remote git repository.
+
+```bash
+./make_remote_gitrepo.sh
+```
 
 
 
