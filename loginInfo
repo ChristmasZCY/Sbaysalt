@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Powered by linge/douyin
+
+echo "IP addresses that have successfully logged in ======"
+grep -i "accepted password" /var/log/secure | \
+awk '{if ($11 ~ /^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$/) print $11 ; else print $8}' | \
+uniq -c | sort -nr -k1
+
+
+echo "IP addresses that have failed to log in ======"
+grep -i "failed password" /var/log/secure | \
+awk '{if ($11 ~ /^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$/) print $11 ; else print $8}' | \
+uniq -c | sort -nr -k1

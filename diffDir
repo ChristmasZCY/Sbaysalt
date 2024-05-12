@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Powered by linge/douyin
+
+# check
+
+if [ $# -ne 2 ]; then
+    echo "Usage: $0 <dir1> <dir2>"
+    exit 1
+fi
+
+# diff -urp $1 $2 2>/dev/null
+
+diff <(cd $1 && find | sort) <(cd $2 && find | sort) -y | grep -E '>|<'
+

@@ -1,0 +1,68 @@
+#!/bin/bash
+
+# Powered by linge/douyin
+
+
+# pv archive.tar.xz | tar xf - -C /tmp
+# pv parallel_studio_xe_2013_update2_intel64.tgz | tar zxf -
+# dnf info pv
+
+# 如果存在pv命令
+if command -v pv &> /dev/null; then
+    F=$2
+    args=("$1" "${@:3}")
+    pv $2 | tar "${args[@]}" -
+    exit 0
+
+else
+    #    # 确保至少提供一个参数
+    #    if [ $# -lt 1 ]; then
+    #        echo "请至少提供一个 tar 文件名。" > /dev/null
+    #        exit 1
+    #    fi
+    #
+    #    # 赋值 tar 文件名给变量 F
+    #    F=$1
+    #
+    #    # 解压命令，跳过第一个参数, 示例: ptar archive.tar.gz -C /tmp  # 不能是 ptar -C /tmp archive.tar.gz
+    #    tar -zxf $F "${@:2}" 2>/dev/null &
+
+    # 将所有外参传入tar后面
+    tar "$@" 2>/dev/null &
+    F=$2
+
+    # 获取 tar 命令的进程 ID
+    TAR_PID=$!
+
+    # 获取文件的总大小
+    TOTAL_SIZE=$(stat -c %s "$F" 2>/dev/null)
+
+    # 检查 TOTAL_SIZE 是否大于0，若为0则设置为1以避免除0错误
+    if [ $TOTAL_SIZE -eq 0 ]; then
+        TOTAL_SIZE=1
+    fi
+
+    # 持续检查解压进度
+    while kill -0 $TAR_PID 2>/dev/null; do
+        # 获取当前已解压的大小
+        CURRENT_SIZE=$(lsof -o0 -o -Fo $F 2>/dev/null | awk -Ft '/^o/{print $2}' | sort -u | tail -n 1)
+        # -o0 指定偏移量从0开始
+        # -oFo 格式化输出为易于解析的格式
+
+        # 如果 CURRENT_SIZE 为空或为零，则设置为0
+        if [ -z "$CURRENT_SIZE" ]; then
+            CURRENT_SIZE=0
+        fi
+
+        # 计算百分比
+        PERCENTAGE=$(awk -v cur=$CURRENT_SIZE -v total=$TOTAL_SIZE 'BEGIN {printf "%d", (cur/total)*100}')
+
+        # 打印进度，使用回车符而不是换行符
+        echo -ne "解压进度: $PERCENTAGE% \r"
+
+        # 暂停一段时间再次检查
+        sleep .1
+    done
+    exit 0
+
+fi

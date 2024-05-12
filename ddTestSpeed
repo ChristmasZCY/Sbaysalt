@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Powered by linge/douyin
+
+#!/bin/bash
+
+dd if=/dev/zero of=/var/tmp/infile count=1175000 &>/dev/null
+
+for bs in  1k 2k 4k 8k 16k 32k 64k 128k 256k 512k 1M 2M 4M 8M
+do
+        echo "[块大小  = $bs]"
+        # 如果是英文系统，用下面的命令
+        if [[ $(echo $LANG | cut -c1-2) == "en" ]]; then
+            dd if=/var/tmp/infile of=/var/tmp/outfile bs=$bs 2>&1 | (grep copied | awk -F ',' '{print "用时/速度:" $2,$3}')
+        elif [[ $(echo $LANG | cut -c1-2) == "zh" ]]; then
+            dd if=/var/tmp/infile of=/var/tmp/outfile bs=$bs 2>&1 | (grep '已复制'|  awk -F '，' '{print "用时/速度:" $3,$4}')
+        fi
+        echo ""
+done
+rm /var/tmp/infile /var/tmp/outfile

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Powered by linge/douyin
+
+#dd if=/dev/urandom of=/dev/null status=progress
+#dd if=/dev/urandom of=/dev/null
+
+kill -USR1 $(pidof dd)

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Powered by linge/douyin
+
+# timedatectl
+
+# timedatectl set-time "2024-02-08 00:00:00"
+# date -s "2024-02-08 00:00:00" && hwclock -w
+# 将时间更改写入RTC时间
+# Local time是根据 RTC加时区偏移量计算
+

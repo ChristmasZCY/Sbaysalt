@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+# 检查远程计算机是否正在侦听端口
+# Reference: https://albertotb.com/bash-test-if-port-22-is-open/
+
+# Usages: ./Test_port.sh $PORT -ip $HOST
+# Examples: ./Test_port.sh 22
+#           ./Test_port.sh 22 -ip localhost
+#           ./Test_port.sh 22 -ip 192.168.9.1
+
+# ssh -v 221.215.222.50 -p 10091
+#       'Connection established' 则打开
+#       ‘No route to host’ 则没打开
+
+# echo > /dev/tcp/221.215.222.50/10091
+#       没有任何输出则打开
+#       有输出则没打开
+
+
+host=localhost  # default
+
+while [ "$1" != "" ]; do
+    case $1 in
+        -ip | --ip )            shift
+                                host=$1
+                                ;;
+        * )                     port=$1
+    esac
+    shift
+done
+
+if [ -z $port ]; then
+    echo "Usage: ./Test_port.sh <port>"
+    echo "       ./Test_port.sh <port> -ip <host>"
+    exit 1
+fi
+
+timeout=5
+
+if nc -w $timeout -z $host $port > /dev/null 2>&1; then
+   echo "Yes ---> HOST $host, PORT $port"
+else
+   echo "No ---> HOST $host, PORT $port"
+fi

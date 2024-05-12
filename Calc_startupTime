@@ -1,0 +1,58 @@
+#!/bin/bash
+
+# Powered by linge/douyin --> https://git.5x5y.cn/linge/douyin/src/master/douyin_video/2024-05-09_统计系统启动时间/startup-time.sh
+
+# Extract startup times
+#pattern="(?<== )\d\.\d{3}(?=s)"
+pattern="(?<== )\d+\.\d+(?=s\.)"
+startup_times=$(grep "systemd\[1\]: Startup" /var/log/messages | grep -oP "${pattern}" )
+
+# Calculate maximum, minimum, and average startup time
+max_time=$(echo "$startup_times" | sort -n | tail -1)
+min_time=$(echo "$startup_times" | sort -rn | tail -1)
+avg_time=$(echo "$startup_times" | paste -sd+ - | bc -l | awk -v count=$(echo "$startup_times" | wc -l) '{printf "%.5f", $1/count}')
+
+# Calculate number of startups
+startup_count=$(echo "$startup_times" | wc -l)
+
+# Function to compute display width considering padding and "|"
+compute_width() {
+  # shellcheck disable=SC2155
+  local length=$(echo -n "$1" | wc -c)  # Count the number of characters
+  echo "$((length + 2))"  # Add 2 for padding inside the box
+}
+
+# Determine maximum width for the display box
+max_width=0
+line1="Longest startup time: $max_time sec"
+line2="Shortest startup time: $min_time sec"
+line3="Average startup time: $avg_time sec"
+line4="Number of startups: $startup_count"
+
+# Calculate maximum width
+for line in "$line1" "$line2" "$line3" "$line4"; do
+  current_width=$(compute_width "$line")
+  if [[ $current_width -gt $max_width ]]; then
+    max_width=$current_width
+  fi
+done
+
+# Adjust max_width for borders
+max_width=$((max_width - 2))
+
+# Print top border
+printf "+%-${max_width}s+\n" | tr ' ' '-'
+
+# Print formatted lines
+print_line() {
+  local content="$1"
+  printf "| %-${max_width}s |\n" "$content"
+}
+
+print_line "$line1"
+print_line "$line2"
+print_line "$line3"
+print_line "$line4"
+
+# Print bottom border
+printf "+%-${max_width}s+\n" | tr ' ' '-'

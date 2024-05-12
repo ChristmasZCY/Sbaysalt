@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Powered by linge/douyin
+
+# tc qdisc add dev ens160 root netem delay 600ms
+# ping www.baidu.com -c 5
+
+# tc qdisc del dev ens160 root netem delay 600ms

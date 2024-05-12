@@ -10,7 +10,7 @@ appname=$1
 function usage() {
     echo -e "Usage: "
     echo "  $0 <appname>"
-    echo "  appname: The name of the application to get information."
+    echo "      appname: The name of the application to get information."
     exit 1
 }
 
