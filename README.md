@@ -159,3 +159,27 @@ Diff two directories.
 ```bash
 diffDir dir1 dir2
 ```
+
+### `cpuUser` :
+
+Get the CPU usage of the user.
+
+```bash
+./cpuUser
+```
+
+### `InstallDate` : 
+
+Get the installation date of the system.
+
+```bash
+./InstallDate
+```
+
+### `changeMacFormat` : 
+
+Change the format of the MAC address.
+
+```bash
+./changeMacFormat
+```

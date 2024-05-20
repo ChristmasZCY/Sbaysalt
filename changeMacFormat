@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Powered by linge/douyin
+# shellcheck disable=SC2001
+maclist=$(ifconfig |grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}')  # cc:48:3a:10:f5:3e
+
+
+sed 's/://g' <<< $maclist  | sed 's/\(....\)/\1-/g;s/-$//'  # cc:48:3a:10:f5:3e -> cc48-3a10-f53e
+sed 's/://g' <<< $maclist  | sed 's/\(..\)/\1-/g;s/-$//'  # cc:48:3a:10:f5:3e -> cc-48-3a-10-f5-3e
+sed 's/://g' <<< $maclist  | sed 's/\(....\)/\1./g;s/.$//'  # cc:48:3a:10:f5:3e -> cc48.3a10.f53e
+echo $maclist | awk '{gsub(/:/,"",$1);print $1}'  # cc:48:3a:10:f5:3e -> cc483a10f53e

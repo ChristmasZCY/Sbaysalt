@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Powered by linge/douyin
+
+# shellcheck disable=SC2012
+ls -lct /etc/ | tail -1
+ll /etc/os-release
+rpm -qa --last | tail -1
+rpm -qi basesystem

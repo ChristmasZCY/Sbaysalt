@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Powered by linge/douyin
+
+
+# 检查是否有命令输入
+if [ $# -eq 0 ]; then
+    echo "Usage: $0 command [args...]"
+    echo "Example: $0 dnf makecache"
+    exit 1
+fi
+
+T="$(date '+%F %T.%N')"  # 记录开始时间
+
+"$@" # 执行命令
+
+find / -xdev -newermt "$T"  # 从 / 目录开始查找修改过的文件,根据需求自行修改目录起点

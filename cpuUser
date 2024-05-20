@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Powered by linge/douyin
+
+
+echo "User             CPU Usage (%)"
+echo "--------------------------------"
+
+# 使用 ps 命令获取系统进程信息，并使用 awk 工具过滤出每个用户的 CPU 使用率
+ps -eo user,%cpu,comm,maj_flt,rss | awk '
+    # 跳过第一行，因为它只是表头
+    NR > 1 {
+        # 用数组保存每个用户的 CPU 使用率之和
+        cpu[$1] += $2
+    }
+    END {
+        # 输出每个用户的 CPU 使用率
+        for (user in cpu) {
+            printf("%-16s %.2f\n", user, cpu[user])
+        }
+    }
+' | sort -k2 -rn
