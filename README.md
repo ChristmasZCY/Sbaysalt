@@ -183,3 +183,14 @@ Change the format of the MAC address.
 ```bash
 ./changeMacFormat
 ```
+
+
+### `SystemInfo` :
+
+Get the system information.
+
+```bash
+
+./SystemInfo
+```
+
